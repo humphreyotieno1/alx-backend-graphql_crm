@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-etcrf9=9q_++qajapvsr7yy@68d)-n@7$bcnbx4!n@i5mk!@h-'
+SECRET_KEY = 'django-insecure-%(_a6p-dljh#**&@*_fdhqx(72da!#aiv!9s)0+3hc!n6b0%+9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'crm',
     'graphene_django',
+    'django_filters',
+    'crm',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,15 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# GraphQL Settings
 GRAPHENE = {
     'SCHEMA': 'alx_backend_graphql_crm.schema.schema',
+    'SCHEMA_OUTPUT': 'schema.json',  # Outputs schema to this file
+    'SCHEMA_INDENT': 2,  # Indentation of JSON output
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+    'RELAY_CONNECTION_MAX_LIMIT': 100,
+    'RELAY_CONNECTION_ENFORCE_FIRST_OR_LAST': True,
+    'RELAY_CONNECTION_HANDSHAKE': None,
 }
