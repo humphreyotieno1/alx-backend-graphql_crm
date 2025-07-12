@@ -206,8 +206,49 @@ class CreateOrder(graphene.Mutation):
             )
 
 
+class UpdateLowStockProducts(graphene.Mutation):
+    """
+    Mutation to update low stock products by restocking them.
+    """
+    class Arguments:
+        restock_amount = Int(required=True, default_value=10, description="Amount to restock each low stock product")
+    
+    success = Boolean()
+    message = String()
+    updated_products = List(types.ProductType)
+    
+    @classmethod
+    def mutate(cls, root, info, restock_amount=10):
+        try:
+            from ..models import Product
+            
+            # Find products with low stock (less than 10 items)
+            low_stock_products = Product.objects.filter(stock__lt=10)
+            updated_products = []
+            
+            # Update each low stock product
+            for product in low_stock_products:
+                product.stock += restock_amount
+                product.save()
+                updated_products.append(product)
+            
+            return UpdateLowStockProducts(
+                success=True,
+                message=f"Successfully restocked {len(updated_products)} products",
+                updated_products=updated_products
+            )
+            
+        except Exception as e:
+            return UpdateLowStockProducts(
+                success=False,
+                message=f"Error updating low stock products: {str(e)}",
+                updated_products=[]
+            )
+
+
 class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
     bulk_create_customers = BulkCreateCustomers.Field()
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
+    update_low_stock_products = UpdateLowStockProducts.Field()
